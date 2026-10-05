@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Hemoperfusion Summit//SPMC 2026//EN
+BEGIN:VEVENT
+UID:hemoperfusion-spmc-20261016@summit.local
+DTSTAMP:20261005T000000Z
+DTSTART;VALUE=DATE:20261016
+DTEND;VALUE=DATE:20261017
+SUMMARY:Hemoperfusion Summit 2026
+LOCATION:SPMC
+DESCRIPTION:For doctors and nurses. Exact room\, start time and programme to be announced. Calendar reminder only; RSVP separately.
+END:VEVENT
+END:VCALENDAR
