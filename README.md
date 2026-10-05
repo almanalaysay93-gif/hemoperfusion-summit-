@@ -1,3 +1,32 @@
 # Hemoperfusion Summit
 
 Landing page for the Hemoperfusion Summit at SPMC on October 16, 2026.
+
+Light blue glassmorphism design, organizer-provided SPMC/SKTI banner, animations, responsive layouts, calendar download, and an RSVP form for doctors and nurses.
+
+## Preview locally
+
+No build step or dependencies required. From the repository root:
+
+```sh
+python3 -m http.server 8000 --directory dist
+```
+
+Open http://localhost:8000 in your browser. Publish the `dist/` directory using any static website host.
+
+## Google Sheets RSVP
+
+RSVP saving is currently inactive. Follow `GOOGLE-SHEETS-SETUP.md` to deploy `Code.gs` as a Google Apps Script web app. Set its deployed `/exec` URL in `dist/config.js` and redeploy the site. Keep the registration Sheet private.
+
+The form reports success only after the endpoint confirms saving. The script validates inputs, requires consent, prevents duplicate registration IDs, and protects against spreadsheet formula injection.
+
+## Files
+
+- `dist/index.html`: page content and registration form
+- `dist/style.css`, `dist/glass.css`: responsive layout and light glass theme
+- `dist/app.js`: animation controls and RSVP submission
+- `dist/assets/summit-banner.jpg`: supplied event banner including both logos
+- `dist/summit.ics`: all-day date reminder
+- `Code.gs`: endpoint to deploy in the organizer's Google account
+
+Exact room, event time, and programme are to be announced. No attendee data or credentials are included.
