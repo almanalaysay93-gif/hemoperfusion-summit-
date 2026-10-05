@@ -2,7 +2,7 @@
 
 Landing page for the Hemoperfusion Summit at SPMC on October 16, 2026.
 
-Light blue glassmorphism design, organizer-provided SPMC/SKTI banner, animations, responsive layouts, calendar download, and an RSVP form for doctors and nurses.
+Light blue glassmorphism design, organizer-provided SPMC/SKTI header and page background, animations, responsive layouts, calendar download, and an RSVP form for doctors and nurses.
 
 ## Preview locally
 
@@ -25,7 +25,9 @@ The form reports success only after the endpoint confirms saving. The script val
 - `dist/index.html`: page content and registration form
 - `dist/style.css`, `dist/glass.css`: responsive layout and light glass theme
 - `dist/app.js`: animation controls and RSVP submission
-- `dist/assets/summit-banner.jpg`: supplied event banner including both logos
+- `dist/assets/summit-header.jpg`: supplied landscape header including both logos
+- `dist/assets/summit-background.jpg`: supplied page background
+- `dist/mobile.css`: phone layout and background styling
 - `dist/summit.ics`: 8:00 AM Philippine time calendar reminder
 - `Code.gs`: endpoint to deploy in the organizer's Google account
 
