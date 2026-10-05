@@ -12,7 +12,7 @@ https://docs.google.com/spreadsheets/d/1S5GFtRiYs1b9NMfweKFs0Fvat6xBinfGqLwFMblL
 7. Click **Deploy** and authorize the script to access your Sheet. Read Google's authorization screen before accepting.
 8. Copy the deployed **Web app URL**, ending in `/exec`, and send it back here. I will connect it to the page and verify a clearly labelled test registration.
 
-Until that URL is connected, the page does not save or claim to save RSVP details. Do not distribute it as an active registration link yet. The time, exact room, and programme are marked to be announced.
+Until that URL is connected, the page does not save or claim to save RSVP details. Do not distribute it as an active registration link yet. The programme is to be announced.
 
 For later code changes, update the deployment to a new version. A `/dev` test URL is not suitable for attendees.
 
@@ -30,6 +30,6 @@ These notifications apply to the website's RSVP endpoint, not arbitrary manual e
 
 ## Attendee confirmation
 
-New registrations also receive a thank-you and RSVP confirmation at their submitted email, including the event date, venue, registration reference, and reply address for corrections or cancellation. Exact room and start time remain to be announced. This email never includes the private registration Sheet link or other attendees' details.
+New registrations also receive a thank-you and RSVP confirmation at their submitted email, including the event date, venue, registration reference, and reply address for corrections or cancellation. Venue: Mahogany Room, 3rd floor, JAICA Building, SPMC. Start: 8:00 AM Philippine time. This email never includes the private registration Sheet link or other attendees' details.
 
 Organizer delivery is tracked in J:L; attendee delivery in M:O. Each is retried independently. Reserve J:O for the automation. Replace the code, run `setupRsvpNotifications` to initialize the additional headers, and deploy a new version. Existing registrations are not automatically emailed unless their attendee status is explicitly set to Pending.

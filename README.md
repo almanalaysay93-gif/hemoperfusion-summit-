@@ -26,7 +26,7 @@ The form reports success only after the endpoint confirms saving. The script val
 - `dist/style.css`, `dist/glass.css`: responsive layout and light glass theme
 - `dist/app.js`: animation controls and RSVP submission
 - `dist/assets/summit-banner.jpg`: supplied event banner including both logos
-- `dist/summit.ics`: all-day date reminder
+- `dist/summit.ics`: 8:00 AM Philippine time calendar reminder
 - `Code.gs`: endpoint to deploy in the organizer's Google account
 
-Exact room, event time, and programme are to be announced. No attendee data or credentials are included.
+Venue: Mahogany Room, 3rd floor, JAICA Building, SPMC. Start: 8:00 AM Philippine time on October 16, 2026. Programme is to be announced. No attendee data or credentials are included.
