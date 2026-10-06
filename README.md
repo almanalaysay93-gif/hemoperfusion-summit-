@@ -31,4 +31,4 @@ The form reports success only after the endpoint confirms saving. The script val
 - `dist/summit.ics`: 8:00 AM Philippine time calendar reminder
 - `Code.gs`: endpoint to deploy in the organizer's Google account
 
-Venue: Mahogany Room, 3rd floor, JAICA Building, SPMC. Start: 8:00 AM Philippine time on October 16, 2026. Programme is to be announced. No attendee data or credentials are included.
+Venue: Mahogany Conference Room, 3rd floor, JICA Building (JICA Outpatient Department / OPD Building), Southern Philippines Medical Center (SPMC). Start: 8:00 AM Philippine time on October 16, 2026. Programme is to be announced. No attendee data or credentials are included.

@@ -58,7 +58,7 @@ function sendRegistrationNotification(sheet, row) {
       subject: 'New RSVP — Hemoperfusion Summit 2026',
       body: [
         'A new RSVP has been recorded for the Hemoperfusion Summit on October 16, 2026, at 8:00 AM Philippine time.',
-        'Venue: Mahogany Room, 3rd floor, JAICA Building, SPMC',
+        'Venue: Mahogany Conference Room, 3rd floor, JICA Building (JICA Outpatient Department / OPD Building), Southern Philippines Medical Center (SPMC)',
         '',
         'Submitted at: ' + values[0],
         'Registration ID: ' + values[1],
@@ -139,7 +139,7 @@ function sendAttendeeConfirmation(sheet, row) {
         'Thank you for registering for the Hemoperfusion Summit 2026! Your RSVP has been recorded and confirmed.',
         '',
         'Date: Friday, October 16, 2026',
-        'Venue: Mahogany Room, 3rd floor, JAICA Building, SPMC',
+        'Venue: Mahogany Conference Room, 3rd floor, JICA Building (JICA Outpatient Department / OPD Building), Southern Philippines Medical Center (SPMC)',
         'Start time: 8:00 AM Philippine time (UTC+8)',
         'Registration reference: ' + values[1],
         '',

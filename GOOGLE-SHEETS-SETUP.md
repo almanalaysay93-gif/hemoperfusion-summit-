@@ -30,6 +30,6 @@ These notifications apply to the website's RSVP endpoint, not arbitrary manual e
 
 ## Attendee confirmation
 
-New registrations also receive a thank-you and RSVP confirmation at their submitted email, including the event date, venue, registration reference, and reply address for corrections or cancellation. Venue: Mahogany Room, 3rd floor, JAICA Building, SPMC. Start: 8:00 AM Philippine time. This email never includes the private registration Sheet link or other attendees' details.
+New registrations also receive a thank-you and RSVP confirmation at their submitted email, including the event date, venue, registration reference, and reply address for corrections or cancellation. Venue: Mahogany Conference Room, 3rd floor, JICA Building (JICA Outpatient Department / OPD Building), Southern Philippines Medical Center (SPMC). Start: 8:00 AM Philippine time. This email never includes the private registration Sheet link or other attendees' details.
 
 Organizer delivery is tracked in J:L; attendee delivery in M:O. Each is retried independently. Reserve J:O for the automation. Replace the code, run `setupRsvpNotifications` to initialize the additional headers, and deploy a new version. Existing registrations are not automatically emailed unless their attendee status is explicitly set to Pending.
