@@ -1,1 +1,4 @@
-Header: organizer-supplied 1000081180.jpg. Page background: organizer-supplied 1000081181.jpg. Assets are displayed intact without image edits. Original portrait poster removed from the site.
+The cartridge, the bead lens, the blood stream, and the kidney art are layers cut from the organizer-supplied summit poster.
+Each layer is a 2.5x or 3x enlargement of the poster with a soft edge mask.
+The SPMC logo and the SKTI logo are organizer-supplied files, resized for the web.
+The two video loops are original HyperFrames compositions in `videos/`.

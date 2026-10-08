@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1080" />
+    <title>Hemoadsorption macro loop</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+        background: #2a3a5c;
+      }
+      #root,
+      #scene {
+        position: absolute;
+        inset: 0;
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 1080px;
+        height: 1080px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="10" data-width="1080" data-height="1080">
+      <div id="scene" class="clip" data-start="0" data-duration="10" data-track-index="0">
+        <canvas id="stage" width="1080" height="1080"></canvas>
+      </div>
+    </div>
+    <script>
+      const TAU = Math.PI * 2;
+      const S = 1080;
+      const cv = document.getElementById("stage");
+      const ctx = cv.getContext("2d");
+
+      // Seeded generator: every render draws the same field.
+      let seed = 20261016;
+      function rnd() {
+        seed = (seed * 1664525 + 1013904223) >>> 0;
+        return seed / 4294967296;
+      }
+      const frac = (v) => v - Math.floor(v);
+      const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+      const smooth = (v) => {
+        const t = clamp(v, 0, 1);
+        return t * t * (3 - 2 * t);
+      };
+
+      // Porous adsorbent bead, drawn once to its own canvas.
+      function makeBead(r) {
+        const pad = 12;
+        const c = document.createElement("canvas");
+        c.width = c.height = (r + pad) * 2;
+        const g = c.getContext("2d");
+        g.translate(r + pad, r + pad);
+        const base = g.createRadialGradient(-r * 0.38, -r * 0.42, r * 0.05, 0, 0, r);
+        base.addColorStop(0, "#7d8591");
+        base.addColorStop(0.32, "#3b4049");
+        base.addColorStop(0.78, "#16181d");
+        base.addColorStop(1, "#050607");
+        g.fillStyle = base;
+        g.beginPath();
+        g.arc(0, 0, r, 0, TAU);
+        g.fill();
+        g.save();
+        g.beginPath();
+        g.arc(0, 0, r, 0, TAU);
+        g.clip();
+        const count = Math.round(r * 1.5);
+        for (let i = 0; i < count; i++) {
+          // Fibonacci sphere keeps the pores evenly spaced over the visible half.
+          const z = 1 - (i + 0.5) / count;
+          const ring = Math.sqrt(1 - z * z);
+          const a = i * 2.39996323 + rnd() * 0.35;
+          const x = Math.cos(a) * ring * r;
+          const y = Math.sin(a) * ring * r;
+          const size = r * (0.05 + rnd() * 0.055);
+          g.save();
+          g.translate(x, y);
+          g.rotate(Math.atan2(y, x));
+          g.scale(Math.max(0.22, z), 1);
+          g.fillStyle = "rgba(2,3,4,0.92)";
+          g.beginPath();
+          g.arc(0, 0, size, 0, TAU);
+          g.fill();
+          g.restore();
+          g.strokeStyle = "rgba(170,180,196," + (0.1 + 0.4 * z).toFixed(3) + ")";
+          g.lineWidth = Math.max(1, r * 0.012);
+          g.beginPath();
+          g.arc(x + size * 0.12, y + size * 0.16, size * Math.max(0.3, z), 0.2, 1.9);
+          g.stroke();
+        }
+        g.restore();
+        const rim = g.createRadialGradient(0, 0, r * 0.8, 0, 0, r);
+        rim.addColorStop(0, "rgba(130,160,210,0)");
+        rim.addColorStop(1, "rgba(130,160,210,0.34)");
+        g.fillStyle = rim;
+        g.beginPath();
+        g.arc(0, 0, r, 0, TAU);
+        g.fill();
+        return { c, half: r + pad };
+      }
+
+      const beads = [
+        { x: 180, y: 190, r: 150, ph: 0.1, far: true },
+        { x: 960, y: 520, r: 120, ph: 0.55, far: true },
+        { x: 770, y: 250, r: 232, ph: 0.3 },
+        { x: 300, y: 850, r: 262, ph: 0.7 },
+        { x: 890, y: 880, r: 206, ph: 0.0 },
+      ];
+      beads.forEach((b) => (b.img = makeBead(b.r)));
+      function beadAt(b, p) {
+        return {
+          x: b.x + 9 * Math.sin(TAU * (p + b.ph)),
+          y: b.y + 12 * Math.cos(TAU * (p + b.ph)),
+        };
+      }
+
+      // Toxin molecules: travel in with the blood, dock on a bead, sink into a pore.
+      const near = beads.filter((b) => !b.far);
+      const toxins = [];
+      for (let i = 0; i < 30; i++) {
+        const bead = near[i % near.length];
+        const ang = Math.PI * (0.62 + rnd() * 1.1) + (bead === near[1] ? -0.9 : 0);
+        const depth = 0.55 + rnd() * 0.4;
+        toxins.push({
+          bead,
+          ox: Math.cos(ang) * bead.r * depth,
+          oy: Math.sin(ang) * bead.r * depth,
+          sx: -120 - rnd() * 160,
+          sy: 180 + rnd() * 620,
+          bend: (rnd() - 0.5) * 420,
+          ph: (i * 0.618034) % 1,
+          r: 13 + rnd() * 13,
+          wob: rnd() * TAU,
+          kind: i % 6 === 5 ? "blue" : "amber",
+          tail: i % 4 === 0 ? 2 : i % 4 === 1 ? 1 : 0,
+        });
+      }
+
+      const cells = [];
+      for (let i = 0; i < 9; i++) {
+        cells.push({
+          y: 330 + rnd() * 380,
+          amp: 40 + rnd() * 70,
+          ph: (i * 0.381966 + 0.07) % 1,
+          r: 66 + rnd() * 46,
+          rot: rnd() * TAU,
+          spin: i % 2 ? 1 : -1,
+          sq: 0.45 + rnd() * 0.4,
+        });
+      }
+
+      const bokeh = [];
+      for (let i = 0; i < 14; i++) {
+        bokeh.push({ x: rnd() * S, y: rnd() * S, r: 30 + rnd() * 80, ph: rnd(), a: 0.05 + rnd() * 0.09 });
+      }
+
+      function sphere(x, y, r, kind, alpha) {
+        const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.4, r * 0.08, x, y, r);
+        if (kind === "blue") {
+          g.addColorStop(0, "#e6f4ff");
+          g.addColorStop(0.4, "#4aa3ff");
+          g.addColorStop(1, "#124a9c");
+        } else {
+          g.addColorStop(0, "#fff6cf");
+          g.addColorStop(0.38, "#ffb21e");
+          g.addColorStop(1, "#b85a00");
+        }
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, TAU);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      function drawCell(c, p) {
+        const u = frac(p + c.ph);
+        const x = -220 + u * (S + 440);
+        const y = c.y + c.amp * Math.sin(TAU * (u + c.ph));
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(c.rot + c.spin * TAU * u);
+        ctx.scale(1, c.sq);
+        const g = ctx.createRadialGradient(0, 0, c.r * 0.05, 0, 0, c.r);
+        g.addColorStop(0, "#8f0d14");
+        g.addColorStop(0.34, "#c8161f");
+        g.addColorStop(0.72, "#f0343c");
+        g.addColorStop(0.93, "#d51f28");
+        g.addColorStop(1, "rgba(160,10,20,0)");
+        ctx.globalAlpha = 0.88;
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(0, 0, c.r, 0, TAU);
+        ctx.fill();
+        ctx.globalAlpha = 0.3;
+        ctx.strokeStyle = "#ffd0d0";
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(0, 0, c.r * 0.8, 3.5, 5.3);
+        ctx.stroke();
+        ctx.restore();
+        ctx.globalAlpha = 1;
+      }
+
+      function drawToxin(t, p) {
+        const u = frac(p + t.ph);
+        const b = beadAt(t.bead, p);
+        const tx = b.x + t.ox;
+        const ty = b.y + t.oy;
+        const travel = smooth(u / 0.62);
+        const mx = (t.sx + tx) / 2;
+        const my = (t.sy + ty) / 2 + t.bend;
+        const k = 1 - travel;
+        let x = k * k * t.sx + 2 * k * travel * mx + travel * travel * tx;
+        let y = k * k * t.sy + 2 * k * travel * my + travel * travel * ty;
+        const drift = k * 16;
+        x += drift * Math.sin(TAU * 3 * u + t.wob);
+        y += drift * Math.cos(TAU * 2 * u + t.wob);
+        const sink = smooth((u - 0.86) / 0.14);
+        const scale = 1 - 0.85 * sink;
+        const alpha = smooth(u / 0.06) * (1 - sink);
+        if (alpha <= 0.002) return;
+        const r = t.r * scale;
+        if (t.tail) {
+          const ang = t.wob + TAU * u;
+          ctx.strokeStyle = "#ffcf66";
+          ctx.lineWidth = Math.max(2, r * 0.3);
+          for (let j = 1; j <= t.tail; j++) {
+            const ax = x + Math.cos(ang + j * 2.1) * r * 2.3;
+            const ay = y + Math.sin(ang + j * 2.1) * r * 2.3;
+            ctx.globalAlpha = alpha * 0.9;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(ax, ay);
+            ctx.stroke();
+            sphere(ax, ay, r * 0.62, t.kind, alpha);
+          }
+        }
+        sphere(x, y, r, t.kind, alpha);
+        // Capture ring when the molecule meets the bead.
+        const ping = (u - 0.62) / 0.16;
+        if (ping > 0 && ping < 1) {
+          ctx.globalAlpha = (1 - ping) * 0.75;
+          ctx.strokeStyle = "#ffe9a8";
+          ctx.lineWidth = 4 * (1 - ping) + 1;
+          ctx.beginPath();
+          ctx.arc(tx, ty, t.r * (1.2 + 2.6 * ping), 0, TAU);
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+      }
+
+      function drawBead(b, p) {
+        const q = beadAt(b, p);
+        ctx.drawImage(b.img.c, q.x - b.img.half, q.y - b.img.half);
+      }
+
+      const state = { p: 0 };
+      function draw() {
+        const p = state.p;
+        const bg = ctx.createRadialGradient(470, 420, 60, 540, 540, 820);
+        bg.addColorStop(0, "#8ea6cb");
+        bg.addColorStop(0.5, "#566f9a");
+        bg.addColorStop(1, "#22304f");
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, S, S);
+        bokeh.forEach((o) => {
+          ctx.globalAlpha = o.a * (0.6 + 0.4 * Math.sin(TAU * (p + o.ph)));
+          ctx.fillStyle = "#dcecff";
+          ctx.beginPath();
+          ctx.arc(o.x + 18 * Math.sin(TAU * (p + o.ph)), o.y, o.r, 0, TAU);
+          ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+        ctx.filter = "blur(7px)";
+        beads.filter((b) => b.far).forEach((b) => drawBead(b, p));
+        ctx.filter = "blur(2.5px)";
+        cells.slice(0, 4).forEach((c) => drawCell(c, p));
+        ctx.filter = "none";
+        cells.slice(4).forEach((c) => drawCell(c, p));
+        near.forEach((b) => drawBead(b, p));
+        toxins.forEach((t) => drawToxin(t, p));
+        const vg = ctx.createRadialGradient(540, 540, 430, 540, 540, 790);
+        vg.addColorStop(0, "rgba(10,20,45,0)");
+        vg.addColorStop(1, "rgba(10,20,45,0.5)");
+        ctx.fillStyle = vg;
+        ctx.fillRect(0, 0, S, S);
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo(state, { p: 0 }, { p: 1, duration: 10, ease: "none", onUpdate: draw }, 0);
+      draw();
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

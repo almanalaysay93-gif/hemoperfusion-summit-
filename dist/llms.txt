@@ -1,0 +1,23 @@
+# Hemoperfusion Summit 2026
+
+> A one-day clinical summit on hemoperfusion and hemoadsorption for doctors and nurses, at Southern Philippines Medical Center (SPMC) in Davao City, Philippines, on October 16, 2026.
+
+- Event: Hemoperfusion Summit 2026 (Hemoadsorption Day, Davao)
+- Theme: Advancing Blood Purification Through Hemoadsorption
+- Date: Friday, October 16, 2026, 8:00 AM Philippine time (UTC+8)
+- Venue: Mahogany Conference Room, 3rd floor, JICA Building (JICA Outpatient Department / OPD Building), Southern Philippines Medical Center, Davao City
+- Hosts: Southern Philippines Medical Center and the SPMC Kidney and Transplant Institute
+- Audience: doctors and nurses
+- Topics: critical care, nephrology, dialysis, blood purification, DPMAS, hemoadsorption therapy
+- Cost: the RSVP form collects no payment
+
+## Pages
+
+- [Summit page](index.html): overview, how hemoadsorption works, event details, proposed programme, and RSVP form
+- [Proposed programme (PDF)](assets/proposed-programme.pdf): session times and speakers, subject to change
+- [Calendar file](summit.ics): calendar reminder for the summit
+
+## Notes
+
+- The programme is a proposed schedule and can change.
+- The page gives general information for clinicians. It is not medical advice.

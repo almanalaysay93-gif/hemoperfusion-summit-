@@ -4,3 +4,5 @@
 !.env.example
 node_modules/
 .sites-runtime/
+videos/*/renders/
+videos/*/snapshots/

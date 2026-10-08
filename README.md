@@ -2,7 +2,10 @@
 
 Landing page for the Hemoperfusion Summit at SPMC on October 16, 2026.
 
-Light blue glassmorphism design, organizer-provided SPMC/SKTI header and page background, animations, responsive layouts, calendar download, and an RSVP form for doctors and nurses.
+The page uses a light clinical theme that matches the summit poster.
+The hero shows the poster cartridge as parallax layers with a pointer tilt, a scroll tilt, and a blood stream.
+The "Inside the cartridge" section explains hemoadsorption in three scroll steps.
+The page also has a calendar download and an RSVP form for doctors and nurses.
 
 ## Preview locally
 
@@ -23,12 +26,20 @@ The form reports success only after the endpoint confirms saving. The script val
 ## Files
 
 - `dist/index.html`: page content and registration form
-- `dist/style.css`, `dist/glass.css`: responsive layout and light glass theme
-- `dist/app.js`: animation controls and RSVP submission
-- `dist/assets/summit-header.jpg`: supplied landscape header including both logos
-- `dist/assets/summit-background.jpg`: supplied page background
-- `dist/mobile.css`: phone layout and background styling
+- `dist/summit.css`: layout, theme, phone layout, and motion-off rules
+- `dist/app.js`: section reveal, animation switch, and RSVP submission
+- `dist/stage.js`: parallax, pointer tilt, scroll steps, canvas particles, and video control
+- `dist/assets/cartridge.webp`, `lens.webp`, `bloodwave.webp`, `kidneys.webp`: layers cut from the summit poster
+- `dist/assets/logo-spmc.webp`, `logo-skti.webp`: SPMC and SKTI logos
+- `dist/assets/flow-loop.mp4`, `adsorb-loop.mp4`: HyperFrames loops, with a poster frame for each
+- `dist/llms.txt`: plain summary of the event for AI assistants
 - `dist/summit.ics`: 8:00 AM Philippine time calendar reminder
+- `videos/flow-loop`, `videos/adsorb-loop`: HyperFrames sources of the two loops
 - `Code.gs`: endpoint to deploy in the organizer's Google account
+
+## Render the loops again
+
+Run `npm run check` and `npm run render` in a folder under `videos/`.
+Then encode the render into `dist/assets` with `ffmpeg`.
 
 Venue: Mahogany Conference Room, 3rd floor, JICA Building (JICA Outpatient Department / OPD Building), Southern Philippines Medical Center (SPMC). Start: 8:00 AM Philippine time on October 16, 2026. Programme is to be announced. No attendee data or credentials are included.
