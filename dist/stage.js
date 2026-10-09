@@ -154,9 +154,70 @@
     }
   }
 
+  // Veins behind the process section: blood with toxins flows in along the top,
+  // clean blood flows back along the bottom.
+  const VEINS = [
+    { pts: [[-.06, .105], [.16, .128], [.36, .1], [.56, .126], [.76, .102], [1.06, .14]], toxins: true },
+    { pts: [[1.06, .925], [.78, .95], [.56, .924], [.36, .948], [.16, .922], [-.06, .945]], toxins: false }
+  ];
+  function curve(pts, n) {
+    const out = [];
+    for (let i = 0; i <= n; i++) {
+      const f = i / n * (pts.length - 1), k = Math.min(pts.length - 2, Math.floor(f)), t = f - k;
+      const p0 = pts[Math.max(0, k - 1)], p1 = pts[k], p2 = pts[k + 1], p3 = pts[Math.min(pts.length - 1, k + 2)];
+      const cr = j => .5 * (2 * p1[j] + (p2[j] - p0[j]) * t + (2 * p0[j] - 5 * p1[j] + 4 * p2[j] - p3[j]) * t * t + (3 * p1[j] - p0[j] - 3 * p2[j] + p3[j]) * t * t * t);
+      out.push([cr(0), cr(1)]);
+    }
+    return out;
+  }
+  class Veins {
+    constructor(canvas) {
+      this.canvas = canvas; this.ctx = canvas.getContext('2d'); this.live = false;
+      this.veins = VEINS.map(v => {
+        const parts = [];
+        const add = (kind, n) => { for (let i = 0; i < n; i++) parts.push({ kind, t: Math.random(), speed: rand(.05, .09), off: rand(-1, 1), rot: rand(0, TAU), vr: rand(-1.2, 1.2), sq: kind === 'cell' ? rand(.5, 1) : 1, size: kind === 'cell' ? rand(.2, .3) : kind === 'toxin' ? rand(.1, .17) : rand(.05, .08) }); };
+        add('cell', v.toxins ? 26 : 34);
+        if (v.toxins) { add('toxin', 14); add('amber', 12); }
+        return { table: curve(v.pts, 90), parts, toxins: v.toxins };
+      });
+    }
+    draw(dt) {
+      if (!fit(this.canvas)) return;
+      const { ctx, canvas } = this, W = canvas.width, H = canvas.height;
+      const wide = H > W * 1.4 ? 46 * (W / (canvas.clientWidth || W)) : clamp(H * .064, 40, 70);
+      ctx.clearRect(0, 0, W, H);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      for (const v of this.veins) {
+        // Tall phone layout: pin each vein to a fixed distance from its edge.
+        const dpr = W / (canvas.clientWidth || W), tall = H > W * 1.4;
+        const Y = y => tall ? (v.toxins ? 58 * dpr + (y - .115) * 620 * dpr : H - 62 * dpr + (y - .935) * 620 * dpr) : y * H;
+        const trace = () => { ctx.beginPath(); v.table.forEach((q, i) => (i ? ctx.lineTo(q[0] * W, Y(q[1])) : ctx.moveTo(q[0] * W, Y(q[1])))); };
+        trace(); ctx.lineWidth = wide + 10; ctx.strokeStyle = 'rgba(176,24,34,.2)'; ctx.stroke();
+        trace(); ctx.lineWidth = wide + 3; ctx.strokeStyle = 'rgba(200,40,50,.34)'; ctx.stroke();
+        trace(); ctx.lineWidth = wide; ctx.strokeStyle = 'rgba(255,232,232,.92)'; ctx.stroke();
+        trace(); ctx.lineWidth = wide * .5; ctx.strokeStyle = 'rgba(255,196,196,.4)'; ctx.stroke();
+        for (const p of v.parts) {
+          p.t += p.speed * dt; p.rot += p.vr * dt;
+          if (p.t >= 1) { p.t -= 1; p.off = rand(-1, 1); }
+          const f = p.t * 90, i = Math.min(89, Math.floor(f)), u = f - i, a = v.table[i], b = v.table[i + 1];
+          const dx = (b[0] - a[0]) * W, dy = Y(b[1]) - Y(a[1]), len = Math.hypot(dx, dy) || 1;
+          const size = p.size * wide, band = (wide / 2 - size) * p.off;
+          const x = (a[0] + (b[0] - a[0]) * u) * W - dy / len * band, y = Y(a[1]) + dy * u + dx / len * band;
+          ctx.globalAlpha = p.kind === 'cell' ? .9 : 1;
+          ctx.save(); ctx.translate(x, y); ctx.rotate(p.rot); ctx.scale(1, p.sq);
+          ctx.drawImage(SPRITES[p.kind], -size, -size, size * 2, size * 2);
+          ctx.restore();
+        }
+        ctx.globalAlpha = 1;
+        trace(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.setLineDash([wide * .9, wide * 2.2]); ctx.translate(0, -wide * .32); ctx.stroke(); ctx.translate(0, wide * .32); ctx.setLineDash([]);
+      }
+    }
+  }
+
   const layers = [
     ...[...document.querySelectorAll('canvas.cells')].map(c => new Stream(c)),
-    ...[...document.querySelectorAll('canvas.cart-fx')].map(c => new CartFx(c))
+    ...[...document.querySelectorAll('canvas.cart-fx')].map(c => new CartFx(c)),
+    ...[...document.querySelectorAll('canvas.veins')].map(c => new Veins(c))
   ];
 
   // Scroll state

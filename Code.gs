@@ -17,7 +17,7 @@ function doPost(e) {
     const id = text('id', 36, true);
     if (!/^[a-f0-9-]{36}$/.test(id)) throw new Error('Invalid registration reference.');
     const name = text('name',120,true), email = text('email',180,true), mobile = text('mobile',30,true), institution = text('institution',180,true), department = text('department',120,false);
-    if (!['Doctor','Nurse'].includes(d.profession) || d.consent !== true || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || mobile.length < 7) throw new Error('Please check your details and consent.');
+    if (!['Doctor','Nurse','Nursing Attendant'].includes(d.profession) || d.consent !== true || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || mobile.length < 7) throw new Error('Please check your details and consent.');
     lock.waitLock(15000); locked = true;
     const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Registrations');
     if (!sheet) throw new Error('Registration sheet is unavailable.');
